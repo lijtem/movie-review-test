@@ -13,7 +13,7 @@ function App() {
     <NavBar />
     <Routes>
       <Route path="/" element={<HomePage />} />
-      <Route path="/show" element={<ShowPage />} />
+      <Route path="/show/:id" element={<ShowPage />} />
       <Route path="/category/:slug" element={<CategoryCollectionPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

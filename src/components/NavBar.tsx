@@ -7,7 +7,7 @@ export function NavBar() {
         return location.pathname === path ? 'text-white font-bold' : 'text-gray-400 hover:text-white transition-colors';
     };
     return (
-        <nav className="bg-black/50 backdrop-blur-md sticky top-0 z-50 border-b border-white/10">
+        <nav className="bg-black/50 backdrop-blur-md sticky top-0 z-50 border-b border-white/10 mb-3">
             <div className="max-w-[1400px] mx-auto px-12 py-4 flex items-center justify-between">
                 <Link to={'/'} className="text-primary text-3xl font-bold no-underline">
                     Movie Review Test

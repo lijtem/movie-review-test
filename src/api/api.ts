@@ -3,7 +3,9 @@ import { withRetry } from '../utils/retry';
 import type {
     DirectusResponse,
     CategoryCollectionItem,
-    CategoryShowItem
+    CategoryShowItem,
+    Show,
+    Review
 } from '../types';
 
 
@@ -63,6 +65,33 @@ export async function getCategoryShows(
     });
 }
 
+export async function getShowById(showId: string): Promise<DirectusResponse<Show>> { 
+    return withRetry(async () => {
+        const response = await apiClient.get<DirectusResponse<Show>>(
+            `/items/show/${showId}`,
+           
+        );
+        return response.data;
+    });
+}
+
+export async function getReviewsByShowId(showId: string): Promise<DirectusResponse<Review[]>> {
+    return withRetry(async () => {
+
+        const filter = buildFilter({
+            show_id: showId,
+        }); 
+        const response = await apiClient.get<DirectusResponse<Review[]>>(
+            `/items/review`,
+            {
+                params: {
+                    filter,
+                },
+            }
+        );
+        return response.data;
+    });
+}
 
 export const api = {
     getCategoryCollection: async (slug: string) => {
@@ -71,6 +100,14 @@ export const api = {
     },
     getCategoryShows: async (categoryId: string) => {
         const result = await getCategoryShows(categoryId);
+        return result;
+    },
+    getShowById: async (showId: string) => {
+        const result = await getShowById(showId);
+        return result;
+    },
+    getReviewsByShowId: async (showId: string) => {
+        const result = await getReviewsByShowId(showId);
         return result;
     },
 };
