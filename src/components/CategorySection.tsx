@@ -4,9 +4,11 @@ import { ShowCard } from "./ShowCard";
 interface Props {
   title: string;
   description: string;
-  shows: Show[];}
+  shows: Show[];
+}
 
-export function CategorySection({ title, description, shows }: Props) {  return (
+export function CategorySection({ title, description, shows }: Props) {
+  return (
     <section className="mb-10">
       <h2 className="mb-4 text-xl font-semibold">{title}</h2>
       <h5 className="mb-4 text-sm text-gray-400">{description}</h5>

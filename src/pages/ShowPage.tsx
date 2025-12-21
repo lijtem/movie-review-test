@@ -3,6 +3,7 @@ import { api } from "../api/api";
 import { useEffect, useState } from "react";
 import { ApiError, type Review, type Show } from "../types";
 import { ReviewList } from "../components/ReviewList";
+import { ReviewForm } from "../components/ReviewForm";
 
 function ShowPage() {
   const { id } = useParams<{ id: string }>();
@@ -39,18 +40,28 @@ function ShowPage() {
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
       });
     } catch {
       return dateString;
     }
   };
 
+  const refreshReviews = async () => {
+    if (!id) return;
+    try {
+      const reviewsResponse = await api.getReviewsByShowId(id);
+      setReviews(reviewsResponse.data || []);
+    } catch (error) {
+      console.error('Failed to refresh reviews:', error);
+    }
+  };
+
   return (
-    <div className="max-w-[1400px] mx-auto px-12 py-8">
+    <div className="max-w-[1400px] mx-auto px-12 py-8 h-full">
       {loading && (
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-neutral-400">Loading...</div>
@@ -98,7 +109,7 @@ function ShowPage() {
 
             <div className="flex-1">
               <h1 className="text-4xl font-bold mb-4">{show.title}</h1>
-              
+
               <div className="flex flex-wrap items-center gap-4 mb-6 text-neutral-400">
                 {show.release_date && (
                   <div className="flex items-center gap-2">
@@ -157,6 +168,7 @@ function ShowPage() {
           <div className="mt-8">
             <h2 className="text-2xl font-bold mb-4">Reviews</h2>
             <ReviewList reviews={reviews} />
+            <ReviewForm showId={id!} onSuccess={refreshReviews} />
           </div>
         </>
       )}

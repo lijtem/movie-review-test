@@ -44,7 +44,7 @@ export async function getCategoryShows(
     categoryId: string
 ): Promise<DirectusResponse<CategoryShowItem[]>> {
     return withRetry(async () => {
-        const fields = buildFields(['category_id.*','show_id.*']);
+        const fields = buildFields(['category_id.*', 'show_id.*']);
         const filter = buildFilter({
             category_id: {
                 id: categoryId,
@@ -65,11 +65,11 @@ export async function getCategoryShows(
     });
 }
 
-export async function getShowById(showId: string): Promise<DirectusResponse<Show>> { 
+export async function getShowById(showId: string): Promise<DirectusResponse<Show>> {
     return withRetry(async () => {
         const response = await apiClient.get<DirectusResponse<Show>>(
             `/items/show/${showId}`,
-           
+
         );
         return response.data;
     });
@@ -80,7 +80,7 @@ export async function getReviewsByShowId(showId: string): Promise<DirectusRespon
 
         const filter = buildFilter({
             show_id: showId,
-        }); 
+        });
         const response = await apiClient.get<DirectusResponse<Review[]>>(
             `/items/review`,
             {
@@ -89,6 +89,17 @@ export async function getReviewsByShowId(showId: string): Promise<DirectusRespon
                 },
             }
         );
+        return response.data;
+    });
+}
+
+export async function createReview(review: Review): Promise<DirectusResponse<Review>> {
+    return withRetry(async () => {
+        const response = await apiClient.post<DirectusResponse<Review>>('/items/review', review, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
         return response.data;
     });
 }
@@ -108,6 +119,10 @@ export const api = {
     },
     getReviewsByShowId: async (showId: string) => {
         const result = await getReviewsByShowId(showId);
+        return result;
+    },
+    createReview: async (review: Review) => {
+        const result = await createReview(review);
         return result;
     },
 };

@@ -31,7 +31,7 @@ export interface Show {
 
 // to do
 export interface Review {
-    id: string;
+    id?: string;
     date_created: string;
     review: string;
     rating: number;
