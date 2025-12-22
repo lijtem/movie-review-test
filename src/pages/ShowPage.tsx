@@ -1,42 +1,25 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { api } from "../api/api";
-import { useEffect, useState } from "react";
-import { ApiError, type Review, type Show } from "../types";
+import { ApiError } from "../types";
 import { ReviewList } from "../components/ReviewList";
 import { ReviewForm } from "../components/ReviewForm";
 import { ErrorMessage } from "../components/ErrorMessage";
+import { useShow } from "../hooks/useShow";
+import { useReviews } from "../hooks/useReviews";
 
 function ShowPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [show, setShow] = useState<Show | null>(null);
-  const [reviews, setReviews] = useState<Review[]>([]);
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        setLoading(true);
-        setError(null);
-        const [showResponse, reviewsResponse] = await Promise.all([
-          api.getShowById(id!),
-          api.getReviewsByShowId(id!)
-        ]);
-        if (!showResponse.data) {
-          setError('Show not found');
-          setLoading(false);
-          return;
-        }
-        setShow(showResponse.data);
-        setReviews(reviewsResponse.data || []);
-      } catch (error) {
-        setError(error instanceof ApiError ? error.message : 'Failed to load show');
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, [id]);
+  const queryClient = useQueryClient();
+
+  const { data: showData, isLoading: showLoading, error: showError } = useShow(id!);
+  const { data: reviewsData, isLoading: reviewsLoading, error: reviewsError } = useReviews(id!);
+
+  const loading = showLoading || reviewsLoading;
+  const error = showError || reviewsError;
+  const show = showData?.data;
+  const reviews = reviewsData?.data || [];
 
   const formatDate = (dateString: string) => {
     try {
@@ -55,7 +38,7 @@ function ShowPage() {
     if (!id) return;
     try {
       const reviewsResponse = await api.getReviewsByShowId(id);
-      setReviews(reviewsResponse.data || []);
+      queryClient.setQueryData(['reviews', id], reviewsResponse);
     } catch (error) {
       console.error('Failed to refresh reviews:', error);
     }
@@ -70,7 +53,7 @@ function ShowPage() {
       )}
       {error && (
         <div className="max-w-[1200px] mx-auto py-12 px-8">
-          <ErrorMessage message={error} onRetry={() => window.location.reload()} />
+          <ErrorMessage message={error instanceof ApiError ? error.message : 'Failed to load show'} onRetry={() => window.location.reload()} />
         </div>
       )}
       {show && (
@@ -124,7 +107,7 @@ function ShowPage() {
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 005.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
+                        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
                       />
                     </svg>
                     <span>{formatDate(show.release_date)}</span>
