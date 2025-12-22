@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { CategorySection } from "../components/CategorySection";
 import { ErrorMessage } from "../components/ErrorMessage";
 import { useCategoryCollection } from "../hooks/useCategoryCollection";
+import { CategorySectionSkeleton } from "../components/Skeleton";
 
 function CategoryCollectionPage({ slug }: { slug?: string | undefined }) {
   const params = useParams();
@@ -10,14 +11,11 @@ function CategoryCollectionPage({ slug }: { slug?: string | undefined }) {
 
   if (isLoading) {
     return (
-      <section className="mb-10">
-        <div className="mb-4 h-6 w-48 rounded bg-neutral-800 animate-pulse" />
-        <div className="flex gap-4 overflow-hidden">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <CategorySection key={i} title="Loading..." description="" shows={[]} />
-          ))}
-        </div>
-      </section>
+      <div className="flex flex-col gap-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <CategorySectionSkeleton key={i} />
+        ))}
+      </div>
     );
   }
 

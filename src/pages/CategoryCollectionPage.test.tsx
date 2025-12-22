@@ -27,7 +27,7 @@ describe('CategoryCollectionPage', () => {
             </BrowserRouter>
         );
 
-        expect(screen.getAllByText(/Loading.../i)).toHaveLength(6);
+        expect(screen.getAllByTestId('skeleton')).not.toHaveLength(0);
     });
 
     it('renders error state', () => {

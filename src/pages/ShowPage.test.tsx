@@ -38,7 +38,7 @@ describe('ShowPage', () => {
         vi.mocked(useReviews).mockReturnValue({ isLoading: true } as any);
 
         render(<ShowPage />, { wrapper });
-        expect(screen.getByText(/Loading.../i)).toBeInTheDocument();
+        expect(screen.getAllByTestId('skeleton')).not.toHaveLength(0);
     });
 
     it('renders error state', () => {
