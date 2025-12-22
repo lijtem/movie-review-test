@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ApiError, type Review, type Show } from "../types";
 import { ReviewList } from "../components/ReviewList";
 import { ReviewForm } from "../components/ReviewForm";
+import { ErrorMessage } from "../components/ErrorMessage";
 
 function ShowPage() {
   const { id } = useParams<{ id: string }>();
@@ -68,9 +69,8 @@ function ShowPage() {
         </div>
       )}
       {error && (
-        <div className="rounded bg-red-900/20 border border-red-500/50 p-4 text-red-200">
-          <p className="font-semibold">Error</p>
-          <p>{error}</p>
+        <div className="max-w-[1200px] mx-auto py-12 px-8">
+          <ErrorMessage message={error} onRetry={() => window.location.reload()} />
         </div>
       )}
       {show && (

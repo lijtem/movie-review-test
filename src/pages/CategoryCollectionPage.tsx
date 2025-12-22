@@ -4,21 +4,23 @@ import { CategorySection } from "../components/CategorySection";
 import { getCategoryCollection, getCategoryShows } from "../api/api";
 import type { Show } from "../types";
 import { ApiError } from "../types";
+import { ErrorMessage } from "../components/ErrorMessage";
 
 interface CategoryWithShows {
-    categoryId: string;
-    title: string;
-    description: string;
-    sort: number;
-    shows: Show[];
+  categoryId: string;
+  title: string;
+  description: string;
+  sort: number;
+  shows: Show[];
 }
 
-function CategoryCollectionPage({slug}:{slug?:string | undefined}) {
+function CategoryCollectionPage({ slug }: { slug?: string | undefined }) {
   const params = useParams();
   const categorySlug = slug ?? params.slug!;
   const [categoriesWithShows, setCategoriesWithShows] = useState<CategoryWithShows[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
 
   useEffect(() => {
     async function fetchData() {
@@ -51,8 +53,8 @@ function CategoryCollectionPage({slug}:{slug?:string | undefined}) {
         const categoriesWithShowsData = await Promise.all(showsPromises);
         setCategoriesWithShows(categoriesWithShowsData);
       } catch (err) {
-        const errorMessage = err instanceof ApiError 
-          ? err.message 
+        const errorMessage = err instanceof ApiError
+          ? err.message
           : 'Failed to load category collection';
         setError(errorMessage);
       } finally {
@@ -78,12 +80,9 @@ function CategoryCollectionPage({slug}:{slug?:string | undefined}) {
 
   if (error) {
     return (
-      <section className="my-10">
-        <div className="rounded bg-red-900/20 border border-red-500/50 p-4 text-black-200">
-          <p className="font-semibold">Error</p>
-          <p>{error}</p>
-        </div>
-      </section>
+      <div className="max-w-[1200px] mx-auto py-12 px-8">
+        <ErrorMessage message={error} onRetry={() => window.location.reload()} />
+      </div>
     );
   }
 
