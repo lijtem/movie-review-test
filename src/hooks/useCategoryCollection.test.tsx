@@ -1,0 +1,78 @@
+import { renderHook, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useCategoryCollection } from './useCategoryCollection';
+import * as api from '../api/api';
+import React from 'react';
+
+vi.mock('../api/api', () => ({
+    getCategoryCollection: vi.fn(),
+    getCategoryShows: vi.fn(),
+}));
+
+const createWrapper = () => {
+    const queryClient = new QueryClient({
+        defaultOptions: {
+            queries: {
+                retry: false,
+            },
+        },
+    });
+    return ({ children }: { children: React.ReactNode }) => (
+        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+};
+
+describe('useCategoryCollection hook', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it('fetches category collection and shows successfully', async () => {
+        const mockCollectionResponse = {
+            data: [
+                {
+                    sort: 1,
+                    category_id: { id: 'cat1', title: 'Action', description: 'Action movies' },
+                },
+            ],
+        };
+        const mockShowsResponse = {
+            data: [
+                {
+                    show_id: { id: 'show1', title: 'Movie 1', description: 'Desc 1', thumbnail_src: 'img1.jpg' },
+                },
+            ],
+        };
+
+        vi.mocked(api.getCategoryCollection).mockResolvedValue(mockCollectionResponse as any);
+        vi.mocked(api.getCategoryShows).mockResolvedValue(mockShowsResponse as any);
+
+        const { result } = renderHook(() => useCategoryCollection('home'), {
+            wrapper: createWrapper(),
+        });
+
+        await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+        expect(result.current.data).toEqual([
+            {
+                categoryId: 'cat1',
+                title: 'Action',
+                description: 'Action movies',
+                sort: 1,
+                shows: [mockShowsResponse.data[0].show_id],
+            },
+        ]);
+    });
+
+    it('handles empty collection error', async () => {
+        vi.mocked(api.getCategoryCollection).mockResolvedValue({ data: [] } as any);
+
+        const { result } = renderHook(() => useCategoryCollection('empty'), {
+            wrapper: createWrapper(),
+        });
+
+        await waitFor(() => expect(result.current.isError).toBe(true));
+        expect(result.current.error).toEqual(new Error('Category collection not found'));
+    });
+});

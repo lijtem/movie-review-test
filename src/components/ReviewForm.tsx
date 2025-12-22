@@ -141,7 +141,7 @@ export function ReviewForm({ showId, onSuccess }: Props) {
                 setError(null);
                 onSuccess?.();
             }
-        } catch (err) {
+        } catch (_err) {
             setError('Failed to submit review. Please try again.');
             setSuccess(false);
         }
@@ -228,8 +228,8 @@ export function ReviewForm({ showId, onSuccess }: Props) {
                 type="submit"
                 disabled={!isFormValid}
                 className={`rounded px-6 py-3 font-medium transition align-right ${isFormValid
-                        ? 'bg-red-600 hover:bg-red-700 cursor-pointer'
-                        : 'bg-neutral-700 text-neutral-500 cursor-not-allowed'
+                    ? 'bg-red-600 hover:bg-red-700 cursor-pointer'
+                    : 'bg-neutral-700 text-neutral-500 cursor-not-allowed'
                     }`}
             >
                 Submit Review
