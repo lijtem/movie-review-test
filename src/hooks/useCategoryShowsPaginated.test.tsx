@@ -2,10 +2,10 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useCategoryShowsPaginated } from './useCategoryShowsPaginated';
-import * as api from '../api/api';
+import { getCategoryShows } from '../api/endpoints/categories';
 import React from 'react';
 
-vi.mock('../api/api', () => ({
+vi.mock('../api/endpoints/categories', () => ({
     getCategoryShows: vi.fn(),
 }));
 
@@ -43,7 +43,7 @@ describe('useCategoryShowsPaginated hook', () => {
             }
         };
 
-        vi.mocked(api.getCategoryShows).mockResolvedValue(mockShowsResponse as any);
+        vi.mocked(getCategoryShows).mockResolvedValue(mockShowsResponse as any);
 
         const { result } = renderHook(() => useCategoryShowsPaginated('cat1', true), {
             wrapper: createWrapper(),
@@ -65,7 +65,7 @@ describe('useCategoryShowsPaginated hook', () => {
 
         expect(result.current.data).toBeUndefined();
         expect(result.current.isLoading).toBe(false);
-        expect(api.getCategoryShows).not.toHaveBeenCalled();
+        expect(getCategoryShows).not.toHaveBeenCalled();
     });
 
     it('indicates no more pages when all data loaded', async () => {
@@ -81,7 +81,7 @@ describe('useCategoryShowsPaginated hook', () => {
             }
         };
 
-        vi.mocked(api.getCategoryShows).mockResolvedValue(mockShowsResponse as any);
+        vi.mocked(getCategoryShows).mockResolvedValue(mockShowsResponse as any);
 
         const { result } = renderHook(() => useCategoryShowsPaginated('cat1', true), {
             wrapper: createWrapper(),
@@ -94,4 +94,3 @@ describe('useCategoryShowsPaginated hook', () => {
         expect(result.current.hasNextPage).toBe(false);
     });
 });
-

@@ -10,10 +10,9 @@ import React from 'react';
 
 vi.mock('../hooks/useShow');
 vi.mock('../hooks/useReviews');
-vi.mock('../api/api', () => ({
-    api: {
-        getReviewsByShowId: vi.fn(),
-    },
+vi.mock('../api/endpoints/reviews', () => ({
+    createReview: vi.fn(),
+    getReviewsByShowId: vi.fn(),
 }));
 
 const queryClient = new QueryClient({

@@ -2,10 +2,10 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useCategoryShows } from './useCategoryShows';
-import * as api from '../api/api';
+import { getCategoryShows } from '../api/endpoints/categories';
 import React from 'react';
 
-vi.mock('../api/api', () => ({
+vi.mock('../api/endpoints/categories', () => ({
     getCategoryShows: vi.fn(),
 }));
 
@@ -39,7 +39,7 @@ describe('useCategoryShows hook', () => {
             ],
         };
 
-        vi.mocked(api.getCategoryShows).mockResolvedValue(mockShowsResponse as any);
+        vi.mocked(getCategoryShows).mockResolvedValue(mockShowsResponse as any);
 
         const { result } = renderHook(() => useCategoryShows('cat1', true), {
             wrapper: createWrapper(),
@@ -60,11 +60,11 @@ describe('useCategoryShows hook', () => {
 
         expect(result.current.data).toBeUndefined();
         expect(result.current.isLoading).toBe(false);
-        expect(api.getCategoryShows).not.toHaveBeenCalled();
+        expect(getCategoryShows).not.toHaveBeenCalled();
     });
 
     it('handles API errors gracefully', async () => {
-        vi.mocked(api.getCategoryShows).mockRejectedValue(new Error('API Error'));
+        vi.mocked(getCategoryShows).mockRejectedValue(new Error('API Error'));
 
         const { result } = renderHook(() => useCategoryShows('cat1', true), {
             wrapper: createWrapper(),
@@ -74,4 +74,3 @@ describe('useCategoryShows hook', () => {
         expect(result.current.error).toEqual(new Error('API Error'));
     });
 });
-

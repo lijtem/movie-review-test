@@ -2,13 +2,11 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useReviews } from './useReviews';
-import { api } from '../api/api';
+import { getReviewsByShowId } from '../api/endpoints/reviews';
 import React from 'react';
 
-vi.mock('../api/api', () => ({
-    api: {
-        getReviewsByShowId: vi.fn(),
-    },
+vi.mock('../api/endpoints/reviews', () => ({
+    getReviewsByShowId: vi.fn(),
 }));
 
 const createWrapper = () => {
@@ -31,7 +29,7 @@ describe('useReviews hook', () => {
 
     it('fetches reviews successfully', async () => {
         const mockData = { data: [{ id: '1', title: 'Great!' }] };
-        vi.mocked(api.getReviewsByShowId).mockResolvedValue(mockData as any);
+        vi.mocked(getReviewsByShowId).mockResolvedValue(mockData as any);
 
         const { result } = renderHook(() => useReviews('1'), {
             wrapper: createWrapper(),
@@ -42,7 +40,7 @@ describe('useReviews hook', () => {
     });
 
     it('handles error state', async () => {
-        vi.mocked(api.getReviewsByShowId).mockRejectedValue(new Error('Fetch failed'));
+        vi.mocked(getReviewsByShowId).mockRejectedValue(new Error('Fetch failed'));
 
         const { result } = renderHook(() => useReviews('1'), {
             wrapper: createWrapper(),

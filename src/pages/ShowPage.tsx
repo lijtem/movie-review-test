@@ -1,14 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
+import { Star, Calendar, ArrowLeft } from "lucide-react";
 import { ApiError } from "../types";
-import { ReviewList } from "../components/ReviewList";
-import { ReviewForm } from "../components/ReviewForm";
-import { ErrorMessage } from "../components/ErrorMessage";
+import { ReviewList, ReviewForm } from "../components/review";
+import { ErrorMessage, Skeleton } from "../components/ui";
 import { useShow } from "../hooks/useShow";
 import { useReviews } from "../hooks/useReviews";
-import { formatDate } from "../utils/formatters";
-import { ArrowLeftIcon, CalendarIcon, StarIcon } from "../components/Icons";
-import { Skeleton } from "../components/Skeleton";
+import { formatDate } from "../lib/utils";
 
 function ShowPage() {
   const { id } = useParams<{ id: string }>();
@@ -58,7 +56,7 @@ function ShowPage() {
             onClick={() => navigate(-1)}
             className="mb-4 sm:mb-6 flex items-center gap-2 text-neutral-400 hover:text-white transition-colors text-sm sm:text-base"
           >
-            <ArrowLeftIcon />
+            <ArrowLeft className="w-5 h-5" />
             Back
           </button>
 
@@ -79,13 +77,13 @@ function ShowPage() {
               <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-4 sm:mb-6 text-sm sm:text-base text-neutral-400">
                 {show.release_date && (
                   <div className="flex items-center gap-1.5 sm:gap-2">
-                    <CalendarIcon />
+                    <Calendar className="w-5 h-5" />
                     <span>{formatDate(show.release_date)}</span>
                   </div>
                 )}
                 {show.tmdb_rating && (
                   <div className="flex items-center gap-1.5 sm:gap-2 bg-neutral-800/50 px-3 py-1.5 rounded-full">
-                    <StarIcon />
+                    <Star className="w-5 h-5 text-yellow-400 fill-current" />
                     <span className="font-semibold text-white">
                       {show.tmdb_rating.toFixed(1)} / 10
                     </span>

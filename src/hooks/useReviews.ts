@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { api } from '../api/api';
+import { getReviewsByShowId } from '../api/endpoints/reviews';
 
 export function useReviews(showId: string) {
     return useQuery({
         queryKey: ['reviews', showId],
-        queryFn: () => api.getReviewsByShowId(showId),
+        queryFn: () => getReviewsByShowId(showId),
     });
 }

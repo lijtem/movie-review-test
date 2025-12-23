@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getCategoryCollection } from '../api/api';
+import { getCategoryCollection } from '../api/endpoints/categories';
 
 export function useCategoryCollection(slug: string) {
     return useQuery({

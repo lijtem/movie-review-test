@@ -2,10 +2,10 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useCategoryCollection } from './useCategoryCollection';
-import * as api from '../api/api';
+import { getCategoryCollection } from '../api/endpoints/categories';
 import React from 'react';
 
-vi.mock('../api/api', () => ({
+vi.mock('../api/endpoints/categories', () => ({
     getCategoryCollection: vi.fn(),
 }));
 
@@ -37,7 +37,7 @@ describe('useCategoryCollection hook', () => {
             ],
         };
 
-        vi.mocked(api.getCategoryCollection).mockResolvedValue(mockCollectionResponse as any);
+        vi.mocked(getCategoryCollection).mockResolvedValue(mockCollectionResponse as any);
 
         const { result } = renderHook(() => useCategoryCollection('home'), {
             wrapper: createWrapper(),
@@ -56,7 +56,7 @@ describe('useCategoryCollection hook', () => {
     });
 
     it('handles empty collection error', async () => {
-        vi.mocked(api.getCategoryCollection).mockResolvedValue({ data: [] } as any);
+        vi.mocked(getCategoryCollection).mockResolvedValue({ data: [] } as any);
 
         const { result } = renderHook(() => useCategoryCollection('empty'), {
             wrapper: createWrapper(),

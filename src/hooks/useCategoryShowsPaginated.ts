@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { getCategoryShows } from '../api/api';
+import { getCategoryShows } from '../api/endpoints/categories';
 
 const SHOWS_PER_PAGE = 6;
 
@@ -32,4 +32,3 @@ export function useCategoryShowsPaginated(categoryId: string, enabled: boolean =
         staleTime: 5 * 60 * 1000,
     });
 }
-

@@ -4,8 +4,7 @@ import HomePage from './pages/HomePage'
 import ShowPage from './pages/ShowPage'
 import CategoryCollectionPage from './pages/CategoryCollectionPage'
 import NotFoundPage from './pages/NotFoundPage'
-import { NavBar } from './components/NavBar'
-import { ErrorBoundary } from './components/ErrorBoundary'
+import { NavBar, ErrorBoundary } from './components/layout'
 
 function App() {
 

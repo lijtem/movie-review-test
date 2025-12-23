@@ -2,13 +2,11 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useShow } from './useShow';
-import { api } from '../api/api';
+import { getShowById } from '../api/endpoints/shows';
 import React from 'react';
 
-vi.mock('../api/api', () => ({
-    api: {
-        getShowById: vi.fn(),
-    },
+vi.mock('../api/endpoints/shows', () => ({
+    getShowById: vi.fn(),
 }));
 
 const createWrapper = () => {
@@ -20,8 +18,8 @@ const createWrapper = () => {
         },
     });
     return ({ children }: { children: React.ReactNode }) => (
-        <QueryClientProvider client= { queryClient } > { children } </QueryClientProvider>
-  );
+        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
 };
 
 describe('useShow hook', () => {
@@ -31,7 +29,7 @@ describe('useShow hook', () => {
 
     it('fetches show data successfully', async () => {
         const mockData = { data: { id: '1', title: 'Test Show' } };
-        vi.mocked(api.getShowById).mockResolvedValue(mockData as any);
+        vi.mocked(getShowById).mockResolvedValue(mockData as any);
 
         const { result } = renderHook(() => useShow('1'), {
             wrapper: createWrapper(),
@@ -42,7 +40,7 @@ describe('useShow hook', () => {
     });
 
     it('handles error state', async () => {
-        vi.mocked(api.getShowById).mockRejectedValue(new Error('Fetch failed'));
+        vi.mocked(getShowById).mockRejectedValue(new Error('Fetch failed'));
 
         const { result } = renderHook(() => useShow('1'), {
             wrapper: createWrapper(),

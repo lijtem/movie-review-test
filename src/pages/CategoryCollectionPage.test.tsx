@@ -5,7 +5,7 @@ import CategoryCollectionPage from './CategoryCollectionPage';
 import { useCategoryCollection } from '../hooks/useCategoryCollection';
 
 vi.mock('../hooks/useCategoryCollection');
-vi.mock('../components/LazyCategorySection', () => ({
+vi.mock('../components/category', () => ({
     LazyCategorySection: ({ title }: { title: string }) => <div data-testid="category-section">{title}</div>
 }));
 

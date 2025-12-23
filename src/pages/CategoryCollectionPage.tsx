@@ -1,8 +1,7 @@
 import { useParams } from "react-router-dom";
-import { LazyCategorySection } from "../components/LazyCategorySection";
-import { ErrorMessage } from "../components/ErrorMessage";
+import { LazyCategorySection } from "../components/category";
+import { ErrorMessage, CategorySectionSkeleton } from "../components/ui";
 import { useCategoryCollection } from "../hooks/useCategoryCollection";
-import { CategorySectionSkeleton } from "../components/Skeleton";
 
 function CategoryCollectionPage({ slug }: { slug?: string | undefined }) {
   const params = useParams();

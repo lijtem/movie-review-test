@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getCategoryShows } from '../api/api';
+import { getCategoryShows } from '../api/endpoints/categories';
 
 export function useCategoryShows(categoryId: string, enabled: boolean = true) {
     return useQuery({
@@ -12,4 +12,3 @@ export function useCategoryShows(categoryId: string, enabled: boolean = true) {
         staleTime: 5 * 60 * 1000,
     });
 }
-
