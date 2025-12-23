@@ -7,7 +7,6 @@ import React from 'react';
 
 vi.mock('../api/api', () => ({
     getCategoryCollection: vi.fn(),
-    getCategoryShows: vi.fn(),
 }));
 
 const createWrapper = () => {
@@ -28,7 +27,7 @@ describe('useCategoryCollection hook', () => {
         vi.clearAllMocks();
     });
 
-    it('fetches category collection and shows successfully', async () => {
+    it('fetches category collection successfully', async () => {
         const mockCollectionResponse = {
             data: [
                 {
@@ -37,16 +36,8 @@ describe('useCategoryCollection hook', () => {
                 },
             ],
         };
-        const mockShowsResponse = {
-            data: [
-                {
-                    show_id: { id: 'show1', title: 'Movie 1', description: 'Desc 1', thumbnail_src: 'img1.jpg' },
-                },
-            ],
-        };
 
         vi.mocked(api.getCategoryCollection).mockResolvedValue(mockCollectionResponse as any);
-        vi.mocked(api.getCategoryShows).mockResolvedValue(mockShowsResponse as any);
 
         const { result } = renderHook(() => useCategoryCollection('home'), {
             wrapper: createWrapper(),
@@ -60,7 +51,6 @@ describe('useCategoryCollection hook', () => {
                 title: 'Action',
                 description: 'Action movies',
                 sort: 1,
-                shows: [mockShowsResponse.data[0].show_id],
             },
         ]);
     });

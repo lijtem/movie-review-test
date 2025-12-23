@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getCategoryCollection, getCategoryShows } from '../api/api';
+import { getCategoryCollection } from '../api/api';
 
 export function useCategoryCollection(slug: string) {
     return useQuery({
@@ -14,21 +14,12 @@ export function useCategoryCollection(slug: string) {
 
             const sortedCategories = [...categories].sort((a, b) => a.sort - b.sort);
 
-            const categoriesWithShows = await Promise.all(
-                sortedCategories.map(async (categoryItem) => {
-                    const showsResponse = await getCategoryShows(categoryItem.category_id.id);
-                    const shows = showsResponse.data.map((item) => item.show_id);
-                    return {
-                        categoryId: categoryItem.category_id.id,
-                        title: categoryItem.category_id.title,
-                        description: categoryItem.category_id.description,
-                        sort: categoryItem.sort,
-                        shows,
-                    };
-                })
-            );
-
-            return categoriesWithShows;
+            return sortedCategories.map((categoryItem) => ({
+                categoryId: categoryItem.category_id.id,
+                title: categoryItem.category_id.title,
+                description: categoryItem.category_id.description,
+                sort: categoryItem.sort,
+            }));
         },
     });
 }

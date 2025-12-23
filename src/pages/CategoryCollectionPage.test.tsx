@@ -5,8 +5,8 @@ import CategoryCollectionPage from './CategoryCollectionPage';
 import { useCategoryCollection } from '../hooks/useCategoryCollection';
 
 vi.mock('../hooks/useCategoryCollection');
-vi.mock('../components/CategorySection', () => ({
-    CategorySection: ({ title }: { title: string }) => <div data-testid="category-section">{title}</div>
+vi.mock('../components/LazyCategorySection', () => ({
+    LazyCategorySection: ({ title }: { title: string }) => <div data-testid="category-section">{title}</div>
 }));
 
 describe('CategoryCollectionPage', () => {
@@ -50,8 +50,8 @@ describe('CategoryCollectionPage', () => {
         vi.mocked(useCategoryCollection).mockReturnValue({
             isLoading: false,
             data: [
-                { categoryId: '1', title: 'Action', description: 'Desc', shows: [] },
-                { categoryId: '2', title: 'Comedy', description: 'Desc', shows: [] },
+                { categoryId: '1', title: 'Action', description: 'Desc', sort: 1 },
+                { categoryId: '2', title: 'Comedy', description: 'Desc', sort: 2 },
             ],
             error: null,
         } as any);

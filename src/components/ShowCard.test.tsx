@@ -33,7 +33,7 @@ describe('ShowCard', () => {
         );
 
         expect(screen.getByText(mockShow.title)).toBeInTheDocument();
-        expect(screen.getByText(/Rating: 8.5/)).toBeInTheDocument();
+        expect(screen.getByText('8.5')).toBeInTheDocument();
         expect(screen.getByRole('img')).toHaveAttribute('src', mockShow.thumbnail_src);
     });
 

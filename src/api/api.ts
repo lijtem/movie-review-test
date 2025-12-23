@@ -17,6 +17,7 @@ export async function getCategoryCollection(
         'category_id.title',
         'category_id.description',
     ]);
+    
     const filter = buildFilter({
         category_collection_id: {
             slug: slug,
@@ -29,6 +30,8 @@ export async function getCategoryCollection(
             params: {
                 fields,
                 filter,
+                sort: ['sort'],
+                meta: 'filter_count'
             },
         }
     );
@@ -38,9 +41,24 @@ export async function getCategoryCollection(
 
 
 export async function getCategoryShows(
-    categoryId: string
+    categoryId: string,
+    options?: {
+        limit?: number;
+        offset?: number;
+    }
 ): Promise<DirectusResponse<CategoryShowItem[]>> {
-    const fields = buildFields(['category_id.*', 'show_id.*']);
+    const limit = options?.limit || 50;
+    const offset = options?.offset || 0;
+
+    const fields = buildFields([
+        'show_id.id',
+        'show_id.title',
+        'show_id.thumbnail_src',
+        'show_id.tmdb_rating',
+        'show_id.release_date',
+        'sort'
+    ]);
+    
     const filter = buildFilter({
         category_id: {
             id: categoryId,
@@ -53,6 +71,10 @@ export async function getCategoryShows(
             params: {
                 fields,
                 filter,
+                sort: ['sort', '-show_id.tmdb_rating'],
+                limit,
+                offset,
+                meta: 'total_count,filter_count'
             },
         }
     );
@@ -61,22 +83,50 @@ export async function getCategoryShows(
 }
 
 export async function getShowById(showId: string): Promise<DirectusResponse<Show>> {
+    const fields = buildFields([
+        'id',
+        'title',
+        'description',
+        'thumbnail_src',
+        'tmdb_rating',
+        'tmdb_id',
+        'release_date'
+    ]);
+
     const response = await apiClient.get<DirectusResponse<Show>>(
         `/items/show/${showId}`,
-
+        {
+            params: {
+                fields
+            }
+        }
     );
     return response.data;
 }
 
 export async function getReviewsByShowId(showId: string): Promise<DirectusResponse<Review[]>> {
+    const fields = buildFields([
+        'id',
+        'title',
+        'review',
+        'rating',
+        'name',
+        'date_created'
+    ]);
+
     const filter = buildFilter({
         show_id: showId,
     });
+    
     const response = await apiClient.get<DirectusResponse<Review[]>>(
         `/items/review`,
         {
             params: {
                 filter,
+                fields,
+                sort: ['-date_created'],
+                limit: 50,
+                meta: 'total_count'
             },
         }
     );
