@@ -6,7 +6,7 @@ import { useCategoryCollection } from "../hooks/useCategoryCollection";
 function CategoryCollectionPage({ slug }: { slug?: string | undefined }) {
   const params = useParams();
   const categorySlug = slug ?? params.slug!;
-  const { data: categories, isLoading, error } = useCategoryCollection(categorySlug);
+  const { data: categories, isLoading, error, refetch } = useCategoryCollection(categorySlug);
 
   if (isLoading) {
     return (
@@ -21,7 +21,7 @@ function CategoryCollectionPage({ slug }: { slug?: string | undefined }) {
   if (error) {
     return (
       <div className="max-w-[1200px] mx-auto py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
-        <ErrorMessage message={error.message} onRetry={() => window.location.reload()} />
+        <ErrorMessage message={error.message} onRetry={() => refetch()} />
       </div>
     );
   }

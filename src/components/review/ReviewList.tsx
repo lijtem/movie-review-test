@@ -4,7 +4,7 @@ import type { Review } from "../../types";
 export function ReviewList({ reviews }: { reviews: Review[] }) {
   if (reviews.length === 0) {
     return (
-      <p className="text-neutral-400 mt-6">
+      <p className="text-text-secondary mt-6">
         No reviews yet. Be the first to review!
       </p>
     );
@@ -15,14 +15,14 @@ export function ReviewList({ reviews }: { reviews: Review[] }) {
       {reviews.map((review) => (
         <div
           key={review.id}
-          className="rounded-xl bg-neutral-900 border border-neutral-800 p-5"
+          className="rounded-card bg-surface border border-neutral-700 p-5"
         >
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-semibold">{review.title}</h3>
             <span className="text-sm">Rating: {review.rating}/5</span>
           </div>
 
-          <p className="text-sm text-neutral-400 mb-3">
+          <p className="text-sm text-text-secondary mb-3">
             by {review.name}
           </p>
 
@@ -34,4 +34,3 @@ export function ReviewList({ reviews }: { reviews: Review[] }) {
     </div>
   );
 }
-

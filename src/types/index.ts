@@ -20,10 +20,10 @@ export interface CategoryShowItem {
 
 export interface Show {
     id: string;
-    tmdb_rating: number;
-    tmdb_id: number;
-    thumbnail_src: string;
-    release_date: string;
+    tmdb_rating: number | null;
+    tmdb_id: number | null;
+    thumbnail_src: string | null;
+    release_date: string | null;
     title: string;
     description: string;
     reviews: string[];

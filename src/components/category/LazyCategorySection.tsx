@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCategoryShowsPaginated } from '../../hooks/useCategoryShowsPaginated';
+import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 import { LazyShowCard } from '../show';
+import { PAGINATION } from '../../lib/constants/pagination';
 
 interface Props {
     categoryId: string;
@@ -10,30 +12,8 @@ interface Props {
 }
 
 export function LazyCategorySection({ categoryId, title, description }: Props) {
-    const [isVisible, setIsVisible] = useState(false);
+    const [ref, isVisible] = useIntersectionObserver({ rootMargin: '200px', threshold: 0.1 });
     const [currentPageIndex, setCurrentPageIndex] = useState(0);
-    const sectionRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting) {
-                    setIsVisible(true);
-                    observer.disconnect();
-                }
-            },
-            {
-                rootMargin: '200px',
-                threshold: 0.1,
-            }
-        );
-
-        if (sectionRef.current) {
-            observer.observe(sectionRef.current);
-        }
-
-        return () => observer.disconnect();
-    }, []);
 
     const {
         data,
@@ -69,7 +49,7 @@ export function LazyCategorySection({ categoryId, title, description }: Props) {
     }, [currentPageIndex, data?.pages.length, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
     return (
-        <section ref={sectionRef} className="mb-8 sm:mb-10 lg:mb-12">
+        <section ref={ref} className="mb-8 sm:mb-10 lg:mb-12">
             <div className="px-4 sm:px-6 lg:px-8">
                 <div className="flex items-baseline justify-between mb-2 sm:mb-3">
                     <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold">{title}</h2>
@@ -84,7 +64,7 @@ export function LazyCategorySection({ categoryId, title, description }: Props) {
 
             {!isVisible || isLoading ? (
                 <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 px-4 sm:px-6 lg:px-8 scrollbar-thin scrollbar-thumb-neutral-700">
-                    {Array.from({ length: 6 }).map((_, i) => (
+                    {Array.from({ length: PAGINATION.SKELETON_COUNT }).map((_, i) => (
                         <div 
                             key={i} 
                             className="w-32 sm:w-36 md:w-40 lg:w-44 h-48 sm:h-54 md:h-60 lg:h-66 bg-neutral-800 rounded-lg animate-pulse shrink-0" 
@@ -107,7 +87,7 @@ export function LazyCategorySection({ categoryId, title, description }: Props) {
                         className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 px-4 sm:px-6 lg:px-8"
                     >
                         {isFetchingNextPage ? (
-                            Array.from({ length: 6 }).map((_, i) => (
+                            Array.from({ length: PAGINATION.SKELETON_COUNT }).map((_, i) => (
                                 <div 
                                     key={`loading-${i}`} 
                                     className="w-full aspect-[2/3] bg-neutral-800 rounded-lg animate-pulse" 
@@ -135,4 +115,3 @@ export function LazyCategorySection({ categoryId, title, description }: Props) {
         </section>
     );
 }
-

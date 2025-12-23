@@ -1,10 +1,5 @@
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { type Review } from "../../types";
-import { createReview } from "../../api/endpoints/reviews";
-import { reviewFormSchema, type ReviewFormData } from "../../lib/schemas/review.schema";
-import { VALIDATION } from "../../lib/config/validation";
+import { useFormReview } from '../../hooks/useFormReview';
+import { VALIDATION } from '../../lib/config/validation';
 
 interface Props {
     showId: string;
@@ -12,76 +7,37 @@ interface Props {
 }
 
 export function ReviewForm({ showId, onSuccess }: Props) {
-    const {
-        register,
-        handleSubmit,
-        reset,
-        formState: { errors, isSubmitting, isValid },
-    } = useForm<ReviewFormData>({
-        resolver: zodResolver(reviewFormSchema),
-        defaultValues: {
-            name: '',
-            title: '',
-            content: '',
-            rating: 0,
-        },
-        mode: 'onBlur',
-    });
-
-    const onSubmit = async (data: ReviewFormData) => {
-        try {
-            const review: Review = {
-                name: data.name,
-                title: data.title,
-                review: data.content,
-                rating: data.rating,
-                show_id: showId,
-                date_created: new Date().toISOString(),
-            };
-            const response = await createReview(review);
-            if (response.data) {
-                reset();
-                toast.success('Review submitted!', {
-                    description: 'Thanks for sharing your thoughts.',
-                });
-                onSuccess?.();
-            }
-        } catch (_err) {
-            toast.error('Failed to submit review', {
-                description: 'Please try again.',
-            });
-        }
-    };
+    const { onSubmit, isPending, isValid, errors, register } = useFormReview(showId, { onSuccess });
 
     return (
-        <form className="mt-10 space-y-4" onSubmit={handleSubmit(onSubmit)}>
+        <form className="mt-10 space-y-4" onSubmit={onSubmit}>
             <h2 className="text-xl font-semibold">Leave a Review</h2>
 
             <div>
                 <input
                     {...register('name')}
-                    className={`w-full rounded bg-neutral-900 border p-3 ${
-                        errors.name ? 'border-red-600' : 'border-neutral-800'
+                    className={`w-full rounded bg-surface border p-3 text-text-main focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors duration-base ${
+                        errors.name ? 'border-error' : 'border-neutral-700'
                     }`}
                     placeholder="Your name"
                     maxLength={VALIDATION.REVIEW.NAME_MAX_LENGTH}
                 />
                 {errors.name && (
-                    <p className="mt-1 text-sm text-red-400">{errors.name.message}</p>
+                    <p className="mt-1 text-sm text-error">{errors.name.message}</p>
                 )}
             </div>
 
             <div>
                 <input
                     {...register('title')}
-                    className={`w-full rounded bg-neutral-900 border p-3 ${
-                        errors.title ? 'border-red-600' : 'border-neutral-800'
+                    className={`w-full rounded bg-surface border p-3 text-text-main focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors duration-base ${
+                        errors.title ? 'border-error' : 'border-neutral-700'
                     }`}
                     placeholder="Review title"
                     maxLength={VALIDATION.REVIEW.TITLE_MAX_LENGTH}
                 />
                 {errors.title && (
-                    <p className="mt-1 text-sm text-red-400">{errors.title.message}</p>
+                    <p className="mt-1 text-sm text-error">{errors.title.message}</p>
                 )}
             </div>
 
@@ -89,22 +45,22 @@ export function ReviewForm({ showId, onSuccess }: Props) {
                 <textarea
                     {...register('content')}
                     rows={5}
-                    className={`w-full rounded bg-neutral-900 border p-3 ${
-                        errors.content ? 'border-red-600' : 'border-neutral-800'
+                    className={`w-full rounded bg-surface border p-3 text-text-main focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors duration-base ${
+                        errors.content ? 'border-error' : 'border-neutral-700'
                     }`}
                     placeholder="Write your review (Markdown supported)"
                     maxLength={VALIDATION.REVIEW.CONTENT_MAX_LENGTH}
                 />
                 {errors.content && (
-                    <p className="mt-1 text-sm text-red-400">{errors.content.message}</p>
+                    <p className="mt-1 text-sm text-error">{errors.content.message}</p>
                 )}
             </div>
 
             <div>
                 <select
                     {...register('rating', { valueAsNumber: true })}
-                    className={`w-full rounded bg-neutral-900 border p-3 ${
-                        errors.rating ? 'border-red-600' : 'border-neutral-800'
+                    className={`w-full rounded bg-surface border p-3 text-text-main focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors duration-base ${
+                        errors.rating ? 'border-error' : 'border-neutral-700'
                     }`}
                 >
                     <option value={0}>Rating</option>
@@ -115,20 +71,20 @@ export function ReviewForm({ showId, onSuccess }: Props) {
                     ))}
                 </select>
                 {errors.rating && (
-                    <p className="mt-1 text-sm text-red-400">{errors.rating.message}</p>
+                    <p className="mt-1 text-sm text-error">{errors.rating.message}</p>
                 )}
             </div>
 
             <button
                 type="submit"
-                disabled={!isValid || isSubmitting}
-                className={`rounded px-6 py-3 font-medium transition align-right ${
-                    isValid && !isSubmitting
-                        ? 'bg-red-600 hover:bg-red-700 cursor-pointer'
-                        : 'bg-neutral-700 text-neutral-500 cursor-not-allowed'
+                disabled={!isValid || isPending}
+                className={`rounded-button px-6 py-3 font-medium transition-all duration-base text-right ${
+                    isValid && !isPending
+                        ? 'bg-primary hover:bg-primary-hover cursor-pointer text-white'
+                        : 'bg-neutral-700 text-text-muted cursor-not-allowed'
                 }`}
             >
-                {isSubmitting ? 'Submitting...' : 'Submit Review'}
+                {isPending ? 'Submitting...' : 'Submit Review'}
             </button>
         </form>
     );

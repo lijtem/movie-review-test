@@ -9,11 +9,11 @@ export function NavBar() {
     const closeMobileMenu = useSetAtom(closeMobileMenuAtom);
 
     const isActive = (path: string) => {
-        return location.pathname === path ? 'text-white font-bold' : 'text-gray-400 hover:text-white transition-colors';
+        return location.pathname === path ? 'text-text-main font-bold' : 'text-text-secondary hover:text-text-main transition-colors';
     };
 
     return (
-        <nav className="bg-black/90 backdrop-blur-md sticky top-0 z-50 border-b border-white/10">
+        <nav className="bg-surface/90 backdrop-blur-md sticky top-0 z-50 border-b border-white/10">
             <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 py-4">
                 <div className="flex items-center justify-between">
                     <Link to={'/'} className="text-primary text-2xl sm:text-3xl font-bold no-underline truncate">
@@ -31,7 +31,7 @@ export function NavBar() {
 
                     <button
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className="md:hidden p-2 text-gray-400 hover:text-white transition-colors"
+                        className="md:hidden p-2 text-text-secondary hover:text-text-main transition-colors"
                         aria-label="Toggle menu"
                     >
                         {mobileMenuOpen ? (

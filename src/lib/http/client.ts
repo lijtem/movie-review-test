@@ -3,7 +3,7 @@ import axiosRetry from 'axios-retry';
 import { ApiError, NetworkError } from '../../types';
 import type { Notification, NotificationType } from '../store/atoms/ui.atoms';
 
-const API_URL = 'https://elantil-fe-task.directus.app';
+const API_URL = import.meta.env.VITE_API_URL || 'https://elantil-fe-task.directus.app';
 
 let notificationSetter: ((notification: Omit<Notification, 'id'>) => void) | null = null;
 
