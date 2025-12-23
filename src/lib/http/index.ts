@@ -1,2 +1,2 @@
-export { apiClient, buildFilter, buildFields } from './client';
+export { apiClient, buildFilter, buildFields, initInterceptors, api } from './client';
 

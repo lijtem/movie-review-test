@@ -1,10 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useAtom, useSetAtom } from "jotai";
 import { Menu, X } from "lucide-react";
+import { mobileMenuOpenAtom, closeMobileMenuAtom } from "../../lib/store";
 
 export function NavBar() {
     const location = useLocation();
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useAtom(mobileMenuOpenAtom);
+    const closeMobileMenu = useSetAtom(closeMobileMenuAtom);
 
     const isActive = (path: string) => {
         return location.pathname === path ? 'text-white font-bold' : 'text-gray-400 hover:text-white transition-colors';
@@ -45,14 +47,14 @@ export function NavBar() {
                         <Link
                             to={'/'}
                             className={`${isActive('/')} text-base no-underline py-2`}
-                            onClick={() => setMobileMenuOpen(false)}
+                            onClick={closeMobileMenu}
                         >
                             Home
                         </Link>
                         <Link
                             to={'/category/genres'}
                             className={`${isActive('/category/genres')} text-base no-underline py-2`}
-                            onClick={() => setMobileMenuOpen(false)}
+                            onClick={closeMobileMenu}
                         >
                             Genres
                         </Link>
@@ -62,4 +64,3 @@ export function NavBar() {
         </nav>
     );
 }
-

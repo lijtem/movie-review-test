@@ -1,0 +1,31 @@
+import { z } from 'zod';
+import { VALIDATION, VALIDATION_MESSAGES } from '../config/validation';
+
+export const reviewFormSchema = z.object({
+  name: z.string()
+    .min(1, VALIDATION_MESSAGES.REVIEW.NAME_REQUIRED)
+    .min(VALIDATION.REVIEW.NAME_MIN_LENGTH, VALIDATION_MESSAGES.REVIEW.NAME_LENGTH)
+    .max(VALIDATION.REVIEW.NAME_MAX_LENGTH, VALIDATION_MESSAGES.REVIEW.NAME_LENGTH)
+    .trim(),
+
+  title: z.string()
+    .min(1, VALIDATION_MESSAGES.REVIEW.TITLE_REQUIRED)
+    .min(VALIDATION.REVIEW.TITLE_MIN_LENGTH, VALIDATION_MESSAGES.REVIEW.TITLE_LENGTH)
+    .max(VALIDATION.REVIEW.TITLE_MAX_LENGTH, VALIDATION_MESSAGES.REVIEW.TITLE_LENGTH)
+    .trim(),
+
+  content: z.string()
+    .min(1, VALIDATION_MESSAGES.REVIEW.CONTENT_REQUIRED)
+    .min(VALIDATION.REVIEW.CONTENT_MIN_LENGTH, VALIDATION_MESSAGES.REVIEW.CONTENT_LENGTH)
+    .max(VALIDATION.REVIEW.CONTENT_MAX_LENGTH, VALIDATION_MESSAGES.REVIEW.CONTENT_LENGTH)
+    .trim(),
+
+  rating: z.number()
+    .int()
+    .min(1, VALIDATION_MESSAGES.REVIEW.RATING_REQUIRED)
+    .max(5),
+});
+
+// Type inference from schema - no separate interface needed
+export type ReviewFormData = z.infer<typeof reviewFormSchema>;
+

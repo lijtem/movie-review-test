@@ -1,10 +1,19 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ReviewForm } from './ReviewForm';
 import { createReview } from '../../api/endpoints/reviews';
+import { toast } from 'sonner';
 
 vi.mock('../../api/endpoints/reviews', () => ({
     createReview: vi.fn(),
+}));
+
+vi.mock('sonner', () => ({
+    toast: {
+        success: vi.fn(),
+        error: vi.fn(),
+    },
 }));
 
 describe('ReviewForm', () => {
@@ -25,59 +34,78 @@ describe('ReviewForm', () => {
     });
 
     it('shows validation errors when fields are touched and invalid', async () => {
+        const user = userEvent.setup();
         render(<ReviewForm showId={showId} />);
 
         const nameInput = screen.getByPlaceholderText(/Your name/i);
-        fireEvent.change(nameInput, { target: { value: 'a' } }); // Too short
+        await user.type(nameInput, 'a'); // Too short
+        await user.tab(); // Blur to trigger validation
 
         expect(await screen.findByText(/Name must be between/i)).toBeInTheDocument();
     });
 
     it('enables the submit button when the form is valid', async () => {
+        const user = userEvent.setup();
         render(<ReviewForm showId={showId} />);
 
-        fireEvent.change(screen.getByPlaceholderText(/Your name/i), { target: { value: 'John Doe' } });
-        fireEvent.change(screen.getByPlaceholderText(/Review title/i), { target: { value: 'Great Show' } });
-        fireEvent.change(screen.getByPlaceholderText(/Write your review/i), { target: { value: 'This is a long enough review for testing.' } });
-        fireEvent.change(screen.getByRole('combobox'), { target: { value: '5' } });
+        await user.type(screen.getByPlaceholderText(/Your name/i), 'John Doe');
+        await user.type(screen.getByPlaceholderText(/Review title/i), 'Great Show');
+        await user.type(screen.getByPlaceholderText(/Write your review/i), 'This is a long enough review for testing.');
+        await user.selectOptions(screen.getByRole('combobox'), '5');
 
-        expect(screen.getByRole('button', { name: /Submit Review/i })).not.toBeDisabled();
+        // Blur all fields to trigger validation
+        await user.tab();
+
+        await waitFor(() => {
+            expect(screen.getByRole('button', { name: /Submit Review/i })).not.toBeDisabled();
+        });
     });
 
     it('submits the form successfully', async () => {
+        const user = userEvent.setup();
         vi.mocked(createReview).mockResolvedValue({ data: {} as any } as any);
 
         render(<ReviewForm showId={showId} onSuccess={mockOnSuccess} />);
 
-        fireEvent.change(screen.getByPlaceholderText(/Your name/i), { target: { value: 'John Doe' } });
-        fireEvent.change(screen.getByPlaceholderText(/Review title/i), { target: { value: 'Great Show' } });
-        fireEvent.change(screen.getByPlaceholderText(/Write your review/i), { target: { value: 'This is a long enough review for testing.' } });
-        fireEvent.change(screen.getByRole('combobox'), { target: { value: '5' } });
+        await user.type(screen.getByPlaceholderText(/Your name/i), 'John Doe');
+        await user.type(screen.getByPlaceholderText(/Review title/i), 'Great Show');
+        await user.type(screen.getByPlaceholderText(/Write your review/i), 'This is a long enough review for testing.');
+        await user.selectOptions(screen.getByRole('combobox'), '5');
+        await user.tab();
 
-        fireEvent.click(screen.getByRole('button', { name: /Submit Review/i }));
+        await waitFor(() => {
+            expect(screen.getByRole('button', { name: /Submit Review/i })).not.toBeDisabled();
+        });
+
+        await user.click(screen.getByRole('button', { name: /Submit Review/i }));
 
         await waitFor(() => {
             expect(createReview).toHaveBeenCalled();
-            expect(screen.getByText(/Review submitted successfully/i)).toBeInTheDocument();
+            expect(toast.success).toHaveBeenCalledWith('Review submitted!', expect.any(Object));
             expect(mockOnSuccess).toHaveBeenCalled();
         });
     });
 
     it('handles submission error', async () => {
+        const user = userEvent.setup();
         vi.mocked(createReview).mockRejectedValue(new Error('Server error'));
 
         render(<ReviewForm showId={showId} />);
 
-        fireEvent.change(screen.getByPlaceholderText(/Your name/i), { target: { value: 'John Doe' } });
-        fireEvent.change(screen.getByPlaceholderText(/Review title/i), { target: { value: 'Great Show' } });
-        fireEvent.change(screen.getByPlaceholderText(/Write your review/i), { target: { value: 'This is a long enough review for testing.' } });
-        fireEvent.change(screen.getByRole('combobox'), { target: { value: '5' } });
-
-        fireEvent.click(screen.getByRole('button', { name: /Submit Review/i }));
+        await user.type(screen.getByPlaceholderText(/Your name/i), 'John Doe');
+        await user.type(screen.getByPlaceholderText(/Review title/i), 'Great Show');
+        await user.type(screen.getByPlaceholderText(/Write your review/i), 'This is a long enough review for testing.');
+        await user.selectOptions(screen.getByRole('combobox'), '5');
+        await user.tab();
 
         await waitFor(() => {
-            expect(screen.getByText(/Failed to submit review/i)).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: /Submit Review/i })).not.toBeDisabled();
+        });
+
+        await user.click(screen.getByRole('button', { name: /Submit Review/i }));
+
+        await waitFor(() => {
+            expect(toast.error).toHaveBeenCalledWith('Failed to submit review', expect.any(Object));
         });
     });
 });
-
